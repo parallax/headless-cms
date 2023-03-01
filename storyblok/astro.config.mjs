@@ -1,4 +1,6 @@
-import { defineConfig } from 'astro/config';
+import { defineConfig } from "astro/config";
+import storyblok from "@storyblok/astro";
+import { loadEnv } from "vite";
 
 // https://astro.build/config
 import react from "@astrojs/react";
@@ -8,5 +10,17 @@ import tailwind from "@astrojs/tailwind";
 
 // https://astro.build/config
 export default defineConfig({
-  integrations: [react(), tailwind()]
+  integrations: [
+    react(),
+    tailwind(),
+    storyblok({
+      accessToken: env.STORYBLOK_TOKEN,
+      components: {
+        // Add your components here
+      },
+      apiOptions: {
+        region: "eu",
+      },
+    }),
+  ],
 });
