@@ -1,0 +1,98 @@
+stage: 2
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    cluster-autoscaler.kubernetes.io/safe-to-evict: 'true'
+  labels:
+    app: 'cron-{{ app }}-{{ branch }}-{{ build }}'
+  name: 'cron-{{ app }}-{{ branch }}-{{ build }}'
+  namespace: '{{ namespace }}'
+spec:
+  minReadySeconds: 10
+  progressDeadlineSeconds: 600
+  replicas: 1
+  revisionHistoryLimit: 1
+  selector:
+    matchLabels:
+      app: 'cron-{{ app }}-{{ branch }}-{{ build }}'
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+    type: RollingUpdate
+  template:
+    metadata:
+      annotations:
+        cluster-autoscaler.kubernetes.io/safe-to-evict: 'true'
+      labels:
+        app: 'cron-{{ app }}-{{ branch }}-{{ build }}'
+    spec:
+      containers:
+        - name: php-fpm
+          image: '{{ image_php_fpm }}'
+          command: ["/start-cron.sh"]
+          env:
+            - name: DB_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: 'mysql57-credentials-{{ branch }}'
+                  key: endpoint
+            - name: DB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: 'mysql57-credentials-{{ branch }}'
+                  key: username
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: 'mysql57-credentials-{{ branch }}'
+                  key: password
+            - name: DB_DATABASE
+              valueFrom:
+                secretKeyRef:
+                  name: 'mysql57-credentials-{{ branch }}'
+                  key: database
+            - name: AWS_BUCKET
+              value: '{{ app }}-kbuild-{{ environment }}'
+            - name: AWS_URL
+              value: 'https://{{ app }}-kbuild-{{ environment }}.s3-eu-west-1.amazonaws.com'
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: 'aws-credentials'
+                  key: AccessKeyId
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: 'aws-credentials'
+                  key: SecretAccessKey
+            - name: AWS_DEFAULT_REGION
+              value: 'eu-west-1'
+            - name: REDIS_HOST
+              value: 'redis'
+            - name: REDIS_PORT
+              value: '6379'
+            - name: CACHE_DRIVER
+              value: 'redis'
+            - name: SESSION_DRIVER
+              value: 'redis'
+            - name: QUEUE_CONNECTION
+              value: 'redis'
+            - name: SESSION_SECURE_COOKIE
+              value: 'true'
+          imagePullPolicy: IfNotPresent
+          volumeMounts:
+            - name: shared-files
+              mountPath: /src-shared
+            - name: efs
+              mountPath: /efs
+      volumes:
+        - name: shared-files
+          emptyDir: {}
+        - name: efs
+          persistentVolumeClaim:
+            claimName: '{{ app }}-{{ environment }}'
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 20

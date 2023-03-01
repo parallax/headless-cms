@@ -9,7 +9,8 @@
     "start": "next start"
   },
   "dependencies": {
-    "next": "^13.2.1",
+    "@sanity/client": "^5.2.2",
+    "next": "^13.2.3",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "zod": "^3.20.6"
