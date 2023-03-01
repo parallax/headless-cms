@@ -1,0 +1,18 @@
+---
+import { storyblokEditable } from "@storyblok/astro";
+import StoryblokComponent from "@storyblok/astro/StoryblokComponent.astro";
+import SimpleCardHeading from "../components/SimpleCardHeading";
+const { blok } = Astro.props;
+---
+
+<main {...storyblokEditable(blok)}>
+  {
+    blok.body?.map((blok) => {
+      return (
+        <SimpleCardHeading client:visible title="Blog">
+          <StoryblokComponent blok={blok} />
+        </SimpleCardHeading>
+      );
+    })
+  }
+</main>
