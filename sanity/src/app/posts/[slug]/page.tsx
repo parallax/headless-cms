@@ -1,22 +1,17 @@
 import { SANITY } from "~/utils/sanity";
 
-export default async function Page({ params }: { params: { slug: string } }) {
-  const { slug } = params;
-  const post = await SANITY.posts.find(slug);
+export default async function Page() {
+  const post = await SANITY.posts.find("71666907-7b4a-4596-96eb-0866c2c388db");
 
   return (
     <>
-      <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#2e026d] to-[#15162c]">
-        <div>{post._id}</div>
-      </main>
+      <div>{post._id}</div>
     </>
   );
 }
 
 export async function generateStaticParams() {
   const posts = await SANITY.posts.get();
-
-  console.log(posts);
 
   return posts.map((post) => ({
     slug: post._id,
