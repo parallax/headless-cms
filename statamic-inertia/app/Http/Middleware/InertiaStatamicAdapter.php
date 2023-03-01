@@ -32,7 +32,7 @@ class InertiaStatamicAdapter
 
     public function handle(Request $request, Closure $next)
     {
-        if (!Str::contains($request->path(), ['forms', 'sitemap.xml'])) {
+        if (!Str::contains($request->path(), ['api', 'forms', 'sitemap.xml'])) {
             $this->request = $request;
             $this->page = app(FrontendController::class)->index($request);
             $this->data = $this->page->toAugmentedArray();
