@@ -5,13 +5,13 @@ import SimpleCardHeading from "../components/SimpleCardHeading";
 const { blok } = Astro.props;
 ---
 
-<main {...storyblokEditable(blok)}>
+<main class="h-screen" {...storyblokEditable(blok)}>
   {
     blok.body?.map((blok) => {
       return (
-        <SimpleCardHeading client:visible title="Blog">
+        <div class="h-full">
           <StoryblokComponent blok={blok} />
-        </SimpleCardHeading>
+        </div>
       );
     })
   }

@@ -5,8 +5,17 @@ const { blok } = Astro.props;
 const content = renderRichText(blok.content);
 ---
 
-<article {...storyblokEditable(blok)}>
-  <h1>{blok.title}</h1>
-  <p>{blok.description}</p>
-  <Fragment set:html={content} />
-</article>
+<main
+  class="pt-8 pb-16 lg:pt-16 lg:pb-24 bg-white dark:bg-gray-900"
+  {...storyblokEditable(blok)}
+>
+  <div class="flex justify-between px-4 mx-auto max-w-screen-xl">
+    <article
+      class="mx-auto w-full max-w-2xl format format-sm sm:format-base lg:format-lg format-blue dark:format-invert text-slate-300"
+    >
+      <h1 class="text-white text-5xl font-bold mb-8">{blok.title}</h1>
+
+      <Fragment set:html={content} />
+    </article>
+  </div>
+</main>
