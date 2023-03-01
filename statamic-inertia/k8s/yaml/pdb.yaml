@@ -1,0 +1,11 @@
+stage: 1
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: 'web-pdb-{{ branch }}-{{ build }}'
+  namespace: '{{ namespace }}'
+spec:
+  maxUnavailable: 1
+  selector:
+    matchLabels:
+      app: '{{ app }}-{{ branch }}-{{ build }}'

@@ -1,0 +1,52 @@
+sections:
+  main:
+    display: Main
+    fields:
+      -
+        handle: title
+        field:
+          type: text
+          required: true
+          validate:
+            - required
+      -
+        handle: content
+        field:
+          type: markdown
+          localizable: true
+  sidebar:
+    display: Sidebar
+    fields:
+      -
+        handle: slug
+        field:
+          type: slug
+          localizable: true
+      -
+        handle: author
+        field:
+          max_items: 1
+          mode: default
+          create: true
+          taxonomies:
+            - authors
+          display: Author
+          type: terms
+          icon: taxonomy
+          listable: hidden
+          instructions_position: above
+          visibility: visible
+      -
+        handle: categories
+        field:
+          mode: default
+          create: true
+          taxonomies:
+            - blog_categories
+          display: Categories
+          type: terms
+          icon: taxonomy
+          listable: hidden
+          instructions_position: above
+          visibility: visible
+title: 'Blog Article'

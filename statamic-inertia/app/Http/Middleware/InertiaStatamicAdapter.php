@@ -10,11 +10,16 @@ use Illuminate\Support\Str;
 use Inertia\Inertia;
 use JsonSerializable;
 use Statamic\Entries\Entry;
+use Statamic\Entries\EntryCollection;
+use Statamic\Facades\Entry as EntryFacade;
 use Statamic\Facades\GlobalSet as GlobalSetFacade;
 use Statamic\Fields\Value;
+use Statamic\Fields\Values;
 use Statamic\Fieldtypes\Assets\Assets as AssetsFieldtype;
+use Statamic\Globals\GlobalCollection;
 use Statamic\Globals\GlobalSet;
 use Statamic\Http\Controllers\FrontendController;
+use Statamic\Query\OrderedQueryBuilder;
 use Statamic\Structures\Page;
 
 class InertiaStatamicAdapter
@@ -35,6 +40,12 @@ class InertiaStatamicAdapter
             $this->collection = $this->data['collection']->value()['handle'];
 
             if ($this->page instanceof Page || $this->page instanceof Entry) {
+                $isLivePreview = filled($this->request->query('live-preview'));
+
+                abort_unless($isLivePreview || $this->page->published, 404);
+
+                $props = $this->buildProps();
+
                 return Inertia::render(
                     $this->buildComponentPath(),
                     $this->buildProps(),
@@ -46,7 +57,7 @@ class InertiaStatamicAdapter
     }
 
     protected function buildComponentPath()
-    {        
+    {
         $path = collect([
             $this->collection,
             $this->blueprint,
@@ -108,13 +119,17 @@ class InertiaStatamicAdapter
     protected function formatPropData($data)
     {
         if ($data instanceof Value) {
-            if ($data->fieldtype() instanceof AssetsFieldtype && $data->value()) {
-                return $this->filterImageData($data->value()->toAugmentedArray());
+            $value = $data->value();
+
+            if ($data->fieldtype() instanceof AssetsFieldtype && $value) {
+                return $this->filterImageData($value->toAugmentedArray());
             }
+
+            return $this->formatPropData($value);
         }
 
         if ($data instanceof Carbon) {
-            return $data;
+            return $data->toDateTimeString();
         }
 
         if ($data instanceof JsonSerializable || $data instanceof Collection) {
@@ -125,20 +140,16 @@ class InertiaStatamicAdapter
             return $this->formatPropData($data->localizations()->get('default'));
         }
 
-        if (is_array($data)) {
+        if ($data instanceof OrderedQueryBuilder) {
+            return $this->formatPropData($data->get());
+        }
+
+        if (is_array($data) || $data instanceof EntryCollection) {
             $response = collect($data)->map(function ($value) {
                 return $this->formatPropData($value);
             })->all();
 
             return $this->filterData($response);
-        }
-
-        if ($data instanceof Value) {            
-            return $data->value();
-        }
-
-        if (is_object($data) && method_exists($data, 'toAugmentedArray')) {
-            return $this->formatPropData($data->toAugmentedArray());
         }
 
         return $data;
@@ -170,7 +181,8 @@ class InertiaStatamicAdapter
             'width',
             'height',
             'ratio',
-            'orientation'
+            'orientation',
+            'permalink'
         );
 
         return $filtered->all();
