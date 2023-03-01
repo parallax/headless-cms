@@ -21,7 +21,7 @@ ADD /tailwind.config.js /src/tailwind.config.js
 COPY --from=modules /src/node_modules /src/node_modules
 ADD /resources /src/resources
 
-RUN cd /src && npm run build
+RUN cd /src && npm run prod
 
 ### Stick it all together ###
 FROM prlx/k8s-openresty-php-php:release-php-8.1-latest
