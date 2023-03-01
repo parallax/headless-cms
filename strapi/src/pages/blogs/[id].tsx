@@ -14,7 +14,7 @@ const BlogsIndex = ({
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <main className="bg-white pt-8 pb-16 dark:bg-gray-900 lg:pt-16 lg:pb-24">
+      <main className="bg-white pt-8 pb-16 dark:bg-gray-900 dark:text-white lg:pt-16 lg:pb-24">
         <div className="mx-auto flex max-w-screen-xl justify-between px-4 ">
           <article className="format format-sm sm:format-base lg:format-lg format-blue dark:format-invert mx-auto w-full max-w-2xl">
             <header className="not-format mb-4 lg:mb-6">

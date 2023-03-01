@@ -32,7 +32,7 @@ const BlogCard = ({ id, title, description,author, createdAt }: Props) => {
         </div>
         <Link
           href={`/blogs/${id}`}
-          className="text-primary-600 dark:text-primary-500 inline-flex items-center font-medium hover:underline"
+          className=" dark:text-white text-primary-600 inline-flex items-center font-medium hover:underline"
         >
           Read more
           <svg
