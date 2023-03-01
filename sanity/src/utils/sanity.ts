@@ -8,20 +8,22 @@ const client = createClient({
   token: process.env.SANITY_SECRET_TOKEN,
 });
 
-type Post = {
+export type Post = {
   _id: string;
   title: string;
   description: string;
-  content: {
-    _key: string;
-    children: {
-      _key: string;
-      text: string;
-    }[];
-  }[];
+  content: PostContent[];
   image: {
     url: string;
   };
+};
+
+export type PostContent = {
+  _key: string;
+  children: {
+    _key: string;
+    text: string;
+  }[];
 };
 
 export const SANITY = {

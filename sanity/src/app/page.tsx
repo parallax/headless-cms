@@ -1,8 +1,9 @@
 import Image from "next/image";
 import Link from "next/link";
+import Content from "~/components/content";
 import { SANITY } from "~/utils/sanity";
 
-const Home = async () => {
+export default async function Page() {
   const posts = await SANITY.posts.get();
 
   return (
@@ -24,21 +25,13 @@ const Home = async () => {
                   />
                 </div>
                 <h1 className="text-xl text-blue-500 underline">
-                  <Link href={`/posts/${_id}`} prefetch={false}>
+                  <Link href={`/blog/${_id}`}>
                     {title}
                   </Link>
                 </h1>
                 <h2>{description}</h2>
 
-                {content.map((block) => {
-                  return block.children.map((block) => {
-                    return (
-                      <div key={block._key}>
-                        <p>{block.text}</p>
-                      </div>
-                    );
-                  });
-                })}
+                <Content content={content} />
               </div>
             );
           })}
@@ -46,6 +39,4 @@ const Home = async () => {
       </main>
     </>
   );
-};
-
-export default Home;
+}
