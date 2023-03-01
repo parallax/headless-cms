@@ -9,7 +9,7 @@ export default function Blog({ title, ready, entry }) {
             <p>{entry.title}</p>
             <div>{entry.content}</div>
             {author.name}
-            <img src={author.} alt="" />
+            <img src={author.profile_picture.permalink} alt="" />
         </div>
     );
 }
