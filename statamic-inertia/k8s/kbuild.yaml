@@ -1,0 +1,31 @@
+domains:
+  - domain: '{{ app }}-{{ branch }}.{{ environment }}.parallax.dev'
+    environments: '*'
+    branches: '*'
+  - domain: '{{ app }}.{{ environment }}.parallax.dev'
+    environments: '*'
+    branches: 'master'
+aws:
+  databases:
+    - type: 'mysql57'
+  s3:
+    - bucket: '{{ app }}-kbuild-{{ environment }}'
+      permissions: public
+afterDeploy:
+  delete:
+    - kind: Deployment
+      namePattern: '{{ app }}-{{ branch }}-*'
+      nameApartFrom: '{{ app }}-{{ branch }}-{{ build }}'
+      namespace: '{{ namespace }}'
+    - kind: Deployment
+      namePattern: 'cron-{{ app }}-{{ branch }}-*'
+      nameApartFrom: 'cron-{{ app }}-{{ branch }}-{{ build }}'
+      namespace: '{{ namespace }}'
+    - kind: Deployment
+      namePattern: 'worker-{{ app }}-{{ branch }}-*'
+      nameApartFrom: 'worker-{{ app }}-{{ branch }}-{{ build }}'
+      namespace: '{{ namespace }}'
+    - kind: PodDisruptionBudget
+      namePattern: 'web-pdb-{{ branch }}-*'
+      nameApartFrom: 'web-pdb-{{ branch }}-{{ build }}'
+      namespace: '{{ namespace }}'

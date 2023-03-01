@@ -1,0 +1,13 @@
+stage: 1
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: '{{ app }}-{{ environment }}'
+  namespace: '{{ namespace }}'
+spec:
+  accessModes:
+  - ReadWriteMany
+  storageClassName: aws-efs
+  resources:
+    requests:
+      storage: 1Mi
