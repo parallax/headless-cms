@@ -17,17 +17,12 @@ export async function getStaticPaths() {
 
     return {
       params: { slug: story.slug },
+      props: { story },
     };
   });
 }
 
-const sbApi = useStoryblokApi();
-const { slug } = Astro.params;
-const { data } = await sbApi.get(`cdn/stories/${slug}`, {
-  version: import.meta.env.DEV ? "draft" : "published",
-});
-
-const story = data.story;
+const { story } = Astro.props;
 ---
 
 <html lang="en">
