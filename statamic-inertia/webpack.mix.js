@@ -20,6 +20,7 @@ mix.postCss('resources/css/tailwind.css', 'public/css', [
 ])
 
 if (mix.inProduction()) {
+   mix.setPublicPath('public');
    mix.version();
 }
 
