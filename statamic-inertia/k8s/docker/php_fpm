@@ -19,6 +19,7 @@ ADD /package-lock.json /src/package-lock.json
 ADD /tailwind.config.js /src/tailwind.config.js
 ADD /webpack.mix.js /src/webpack.mix.js
 ADD /.babelrc /src/.babelrc
+ADD /public /src/public
 
 COPY --from=modules /src/node_modules /src/node_modules
 ADD /resources /src/resources
