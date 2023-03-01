@@ -19,7 +19,6 @@ ADD /package-lock.json /src/package-lock.json
 ADD /jsconfig.json /src/jsconfig.json
 ADD /postcss.config.js /src/postcss.config.js
 ADD /tailwind.config.js /src/tailwind.config.js
-ADD /vite.config.js /src/vite.config.js
 
 COPY --from=modules /src/node_modules /src/node_modules
 ADD /resources /src/resources
