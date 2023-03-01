@@ -17,7 +17,6 @@ FROM node:14 as build
 ADD /package.json /src/package.json
 ADD /package-lock.json /src/package-lock.json
 ADD /jsconfig.json /src/jsconfig.json
-ADD /postcss.config.js /src/postcss.config.js
 ADD /tailwind.config.js /src/tailwind.config.js
 
 COPY --from=modules /src/node_modules /src/node_modules
