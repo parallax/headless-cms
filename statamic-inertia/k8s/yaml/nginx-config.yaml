@@ -1,0 +1,83 @@
+stage: 1
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: '{{ branch }}-openresty-config'
+  namespace: '{{ namespace }}'
+data:
+  default.conf: |
+    server {
+        listen 80 default_server;
+    
+        root /src-shared/public;
+    
+        add_header Pod $hostname;
+    
+        # Add index.php to the list if you are using PHP
+        index index.php index.html index.htm;
+    
+        server_name _;
+
+        location ~* \.(ico|css|js|gif|jpeg|jpg|png|webp|woff|ttf|otf|svg|woff2|eot)$ {
+            add_header Cache-Control "public, max-age=31536000";
+            try_files $uri $uri/ /index.php?$query_string;
+        }
+
+        location / {
+            try_files /static${uri}_${args}.html $uri /index.php?$args;
+        }
+    
+        location ~ \.php$ {
+            try_files $uri =404;
+      
+            include fastcgi_params;
+            fastcgi_split_path_info ^(.+\.php)(/.+)$;
+            fastcgi_pass 127.0.0.1:9000;
+            fastcgi_param SERVER_NAME $http_host;
+            fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+            fastcgi_param SCRIPT_NAME $fastcgi_script_name;
+            fastcgi_index index.php;
+            fastcgi_read_timeout 30s;
+            fastcgi_request_buffering off;
+            fastcgi_param PHP_VALUE "atatus.enabled=on;";
+        }
+    
+        # Nginx Health Check Endpoint
+        location ~ ^/(healthz)$ {
+            content_by_lua_block {
+                ngx.status = 200
+                ngx.header['Content-Type'] = 'text/plain'
+                ngx.say("Nginx OK")
+                ngx.exit(ngx.OK)
+            }
+            access_log off;
+        }
+    
+        error_page 403 /403.html;
+        error_page 404 /404.html;
+        error_page 500 /500.html;
+        error_page 502 /502.html;
+        error_page 504 /504.html;
+    
+        location = /403.html {
+            root /usr/local/openresty/nginx/html;
+            internal;
+        }
+        location = /404.html {
+            root /usr/local/openresty/nginx/html;
+            internal;
+        }
+        location = /500.html {
+            root /usr/local/openresty/nginx/html;
+            internal;
+        }
+        location = /502.html {
+            root /usr/local/openresty/nginx/html;
+            internal;
+        }
+        location = /504.html {
+            root /usr/local/openresty/nginx/html;
+            internal;
+        }
+    
+    }

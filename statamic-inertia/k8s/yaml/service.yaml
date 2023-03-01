@@ -1,0 +1,16 @@
+stage: 3
+apiVersion: v1
+kind: Service
+metadata:
+  name: '{{ branch }}-openresty'
+  namespace: '{{ namespace }}'
+spec:
+  ports:
+  - name: openresty
+    port: 80
+    protocol: TCP
+    targetPort: 80
+  selector:
+    app: '{{ app }}-{{ branch }}-{{ build }}'
+  sessionAffinity: None
+  type: ClusterIP

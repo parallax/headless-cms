@@ -1,0 +1,46 @@
+### Install PHP dependencies ###
+FROM prlx/k8s-openresty-php-php:release-php-8.1-latest as composer
+
+ADD composer.json /src/
+ADD composer.lock /src/
+RUN cd /src && composer install --no-dev --no-scripts --no-autoloader
+
+FROM node:18 as modules
+
+ADD /package.json /src/package.json
+ADD /package-lock.json /src/package-lock.json
+
+RUN cd /src && npm install
+
+FROM node:14 as build
+
+ADD /package.json /src/package.json
+ADD /package-lock.json /src/package-lock.json
+ADD /jsconfig.json /src/jsconfig.json
+ADD /postcss.config.js /src/postcss.config.js
+ADD /tailwind.config.js /src/tailwind.config.js
+ADD /vite.config.js /src/vite.config.js
+
+COPY --from=modules /src/node_modules /src/node_modules
+ADD /resources /src/resources
+
+RUN cd /src && npm run build
+
+### Stick it all together ###
+FROM prlx/k8s-openresty-php-php:release-php-8.1-latest
+
+# Add web user
+RUN adduser --disabled-password --no-create-home --uid=1000 web web
+
+ADD /k8s/conf/cron/web /etc/cron/web
+
+ADD / /src
+COPY --from=build /src/public /src/public
+COPY --from=composer /src/vendor /src/vendor
+
+RUN cd /src && composer dump-autoload --optimize
+
+# Install Statamic
+RUN cd /src && /usr/bin/php please install
+
+RUN cd /src && chown -R web:web /src
